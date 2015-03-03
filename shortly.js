@@ -25,12 +25,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Implementing Sessions
 // TODO: Extend sessions to get requests and routes
-app.use(session({
-  genid: function(req){
-    return genuuid()
-  },
-  secret: 'website shortly'
-}));
+app.use(session({secret: 'shortly secret shoes'}));
 
 app.get('/',
 function(req, res) {
@@ -100,7 +95,23 @@ app.post('/signup',
     // User.forge({id: null, username: req.body.username, saltPass: userHash}).save();
   });
 
+app.get('/login',
+  function(req, res) {
+    res.render('login');
+});
 
+app.post('/login',
+  function(req, res){
+    var sess = req.session;
+    console.log(User.authenticate(req.body));
+    if(User.authenticate(req.body)){
+      console.log('login success');
+      res.render('index');
+    } else {
+      console.log('login failed');
+      res.render('login');
+    }
+  })
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail

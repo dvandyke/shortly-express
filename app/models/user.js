@@ -12,5 +12,16 @@ User.encrypt = function(obj){
   })
 };
 
+User.authenticate = function(obj){
+  //Database query for User Hash
+  var success = false;
+  new User({'username':obj.username}).fetch().then(function(model){
+    //Compare salts
+    return bcrypt.compare(obj.password, model.get('saltPass'), function(err, res){
+    });
+  }).then(function(val){
+    console.log('promise value:',val);
+  });
+};
 
 module.exports = User;
