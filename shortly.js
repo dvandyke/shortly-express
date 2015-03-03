@@ -26,18 +26,14 @@ app.use(express.static(__dirname + '/public'));
 // Implementing Sessions
 // TODO: Extend sessions to get requests and routes
 app.use(session(
-  {
-  secret: 'shortly secret shoes',
-  cookie: {maxAge:10000}
-  }
+  { secret: 'shortly secret shoes' }
 ));
 
 var sess;
 
 app.get('/',
 function(req, res) {
-  sess = req.session;
-  if (sess.username){
+  if (req.session.user){
     res.render('index');
   } else {
     res.render('login')
@@ -121,9 +117,9 @@ app.post('/login',
     User.authenticate(req.body.password, saltPass, function(val){
       if (val){
         //Cookie Session
+        util.newSession(req, res, loginUser);
         sess.username = req.body.username;
         console.log(sess);
-        res.render('index');
       } else {
         res.render('login');
       }
