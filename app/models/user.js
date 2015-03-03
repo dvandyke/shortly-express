@@ -8,25 +8,8 @@ var User = db.Model.extend({
 
 User.encrypt = function(obj){
   bcrypt.hash(obj.password, null, null, function(err, hash){
-    return hash;
+    User.forge({id: null, username: obj.username, saltPass: hash}).save();
   })
-
-  //create salt
-  // bcrypt.genSalt(10, function(err, salt){
-  //   var temp = salt;
-  //   //create hash
-  //   bcrypt.hash(obj.password, temp, null, function(error, hash){
-  //     console.log('salt:',temp);
-  //     console.log('hash:',hash);
-  //     if (error){
-  //       console.log(error);
-  //     } else {
-  //       //TODO: Access collection to save to database
-  //       console.log(db.Collection.__super__);
-  //       // db.knex('users').insert({id: null, username: obj.username, password: hash, salt: temp})
-  //     }
-  //   });
-  // });
 };
 
 

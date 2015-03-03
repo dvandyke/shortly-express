@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -22,11 +23,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+// Implementing Sessions
+// TODO: Extend sessions to get requests and routes
+app.use(session({
+  genid: function(req){
+    return genuuid()
+  },
+  secret: 'website shortly'
+}));
 
 app.get('/',
 function(req, res) {
   // res.render('index');
-  res.render('login');
+  res.render('index');
 });
 
 app.get('/create',
@@ -86,8 +95,9 @@ function(req, res) {
 /************************************************************/
 app.post('/signup',
   function(req, res){
-    var userHash = User.encrypt(req.body);
-    User.forge({id: null, username: req.body.username, saltPass: userHash}).save();
+    User.encrypt(req.body);
+    res.render('index');
+    // User.forge({id: null, username: req.body.username, saltPass: userHash}).save();
   });
 
 
