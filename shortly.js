@@ -86,10 +86,9 @@ function(req, res) {
 /************************************************************/
 app.post('/signup',
   function(req, res){
-    // console.log(db.Model);
-    User.encrypt(req.body);
-
-  })
+    var userHash = User.encrypt(req.body);
+    User.forge({id: null, username: req.body.username, saltPass: userHash}).save();
+  });
 
 
 
