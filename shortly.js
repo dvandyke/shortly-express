@@ -88,6 +88,7 @@ app.post('/signup',
   function(req, res){
     // console.log(db.Model);
     User.encrypt(req.body);
+
   })
 
 
