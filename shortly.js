@@ -103,14 +103,25 @@ app.get('/login',
 app.post('/login',
   function(req, res){
     var sess = req.session;
-    console.log(User.authenticate(req.body));
-    if(User.authenticate(req.body)){
-      console.log('login success');
-      res.render('index');
-    } else {
-      console.log('login failed');
-      res.render('login');
-    }
+    var loginUser = new User({'username':req.body.username}).fetch().then(function(model){
+      //Compare salts
+    var saltPass = model.get('saltPass');
+    // console.log('saltPass',saltPass,'reqbodypass',req.body.password);
+    User.authenticate(req.body.password, saltPass, function(val){
+      if (val){
+        res.render('index');
+      } else {
+        res.render('login');
+      }
+    });
+  });
+    // if(User.authenticate(req.body)){
+    //   console.log('login success');
+    //   res.render('index');
+    // } else {
+    //   console.log('login failed');
+    //   res.render('login');
+    // }
   })
 
 /************************************************************/
