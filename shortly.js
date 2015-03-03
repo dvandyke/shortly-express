@@ -25,12 +25,23 @@ app.use(express.static(__dirname + '/public'));
 
 // Implementing Sessions
 // TODO: Extend sessions to get requests and routes
-app.use(session({secret: 'shortly secret shoes'}));
+app.use(session(
+  {
+  secret: 'shortly secret shoes',
+  cookie: {maxAge:10000}
+  }
+));
+
+var sess;
 
 app.get('/',
 function(req, res) {
-  // res.render('index');
-  res.render('index');
+  sess = req.session;
+  if (sess.username){
+    res.render('index');
+  } else {
+    res.render('login')
+  }
 });
 
 app.get('/create',
@@ -102,27 +113,24 @@ app.get('/login',
 
 app.post('/login',
   function(req, res){
-    var sess = req.session;
+    sess = req.session;
     var loginUser = new User({'username':req.body.username}).fetch().then(function(model){
-      //Compare salts
+
+    //Compare salts
     var saltPass = model.get('saltPass');
-    // console.log('saltPass',saltPass,'reqbodypass',req.body.password);
     User.authenticate(req.body.password, saltPass, function(val){
       if (val){
+        //Cookie Session
+        sess.username = req.body.username;
+        console.log(sess);
         res.render('index');
       } else {
         res.render('login');
       }
     });
+
   });
-    // if(User.authenticate(req.body)){
-    //   console.log('login success');
-    //   res.render('index');
-    // } else {
-    //   console.log('login failed');
-    //   res.render('login');
-    // }
-  })
+});
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail

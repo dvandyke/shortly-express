@@ -14,12 +14,8 @@ User.encrypt = function(obj){
 
 User.authenticate = function(reqBodyPass, salt, callback){
   bcrypt.compare(reqBodyPass, salt, function(err, res){
-    if (err){
-      callback(err);
-    } else {
-      callback(res);
-    }
-  })
+    err ? callback(err) : callback(res);
+  });
 };
 
 module.exports = User;
