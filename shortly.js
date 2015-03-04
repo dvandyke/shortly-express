@@ -26,7 +26,7 @@ app.use(express.static(__dirname + '/public'));
 // Implementing Sessions
 // TODO: Extend sessions to get requests and routes
 app.use(session(
-  { secret: 'shortly secret shoes' }
+  { secret: 'shortly secret shoes', cookie: {maxAge: 30000} }
 ));
 
 var sess;
@@ -34,6 +34,10 @@ var sess;
 app.get('/',
 function(req, res) {
   if (req.session.user){
+    //Cookie Session
+    req.session.regenerate(function(err){
+      console.log('Index Route Error:', err);
+    });
     res.render('index');
   } else {
     res.render('login')
@@ -41,9 +45,18 @@ function(req, res) {
 });
 
 app.get('/create',
-function(req, res) {
-  res.render('index');
+  function(req, res) {
+    res.render('index');
 });
+
+// Logout
+app.get('/logout',
+  function(req, res){
+   req.session.destroy(function(err){
+    err ? console.log(err) : console.log('bye!');
+    res.redirect('login');
+   });
+  })
 
 // Routing request to create accounts to signup.ejs
 app.get('/signup',
@@ -119,7 +132,6 @@ app.post('/login',
         //Cookie Session
         util.newSession(req, res, loginUser);
         sess.username = req.body.username;
-        console.log(sess);
       } else {
         res.render('login');
       }
